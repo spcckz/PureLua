@@ -58,6 +58,5 @@ client_scripts {
 ### Restart the Resource:
 
 Use the following commands in the server console:
-```bash
 refresh
 ensure your_resource_name
