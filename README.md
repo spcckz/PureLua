@@ -45,3 +45,12 @@ You can create new `.lua` files to hook into the PureLua menu.
    end
 
    Citizen.CreateThread(setupExampleMenu)
+
+### Include It in fxmanifest.lua:
+
+Add your script:
+```lua
+client_scripts {
+    'client.lua',
+    'example.lua'
+}
