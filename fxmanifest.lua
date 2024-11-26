@@ -6,6 +6,8 @@ description 'Custom Dependency-Free Menu Script'
 version '1.0.0'
 
 client_scripts {
-    'client.lua', -- Ensure this matches the name of your client script
-    'paint.lua' -- The new paint cycling script
+    'menu/client.lua', -- Core menu logic
+    'superpunch.lua', -- Adds Super Punch to Player Options
+    'explopunch.lua', -- Adds Explosive Punch to Player Options
+    'paint.lua' -- Paint cycling feature
 }
