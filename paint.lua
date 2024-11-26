@@ -46,9 +46,19 @@ local secondaryPaintIndex = 161
 local rimPaintIndex = 161
 
 -- Update Paints
-local function updatePaints(vehicle)
-    SetVehicleColours(vehicle, primaryPaintIndex, secondaryPaintIndex)
-    SetVehicleExtraColours(vehicle, rimPaintIndex, 0) -- 0 for pearl
+local function updatePaints(vehicle, type)
+    local primaryColor, secondaryColor = GetVehicleColours(vehicle) -- Retrieve current colors
+
+    if type == "primary" then
+        -- Update only the primary paint
+        SetVehicleColours(vehicle, primaryPaintIndex, secondaryColor)
+    elseif type == "secondary" then
+        -- Update only the secondary paint
+        SetVehicleColours(vehicle, primaryColor, secondaryPaintIndex)
+    elseif type == "rim" then
+        -- Update only the rim paint
+        SetVehicleExtraColours(vehicle, 0, rimPaintIndex)
+    end
 end
 
 -- Create Paint Menu
@@ -65,25 +75,40 @@ local function setupPaintMenu()
                 primaryPaintIndex = isIncrement and (primaryPaintIndex + 1) or (primaryPaintIndex - 1)
                 if primaryPaintIndex > 242 then primaryPaintIndex = 161 elseif primaryPaintIndex < 161 then primaryPaintIndex = 242 end
                 local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-                if vehicle ~= 0 then updatePaints(vehicle) end
+                if vehicle ~= 0 then updatePaints(vehicle, "primary") end
             end },
             { label = "Secondary Paint: " .. getPaintNameById(secondaryPaintIndex), action = function(isIncrement)
                 secondaryPaintIndex = isIncrement and (secondaryPaintIndex + 1) or (secondaryPaintIndex - 1)
                 if secondaryPaintIndex > 242 then secondaryPaintIndex = 161 elseif secondaryPaintIndex < 161 then secondaryPaintIndex = 242 end
                 local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-                if vehicle ~= 0 then updatePaints(vehicle) end
+                if vehicle ~= 0 then updatePaints(vehicle, "secondary") end
             end },
             { label = "Rim Paint: " .. getPaintNameById(rimPaintIndex), action = function(isIncrement)
                 rimPaintIndex = isIncrement and (rimPaintIndex + 1) or (rimPaintIndex - 1)
                 if rimPaintIndex > 242 then rimPaintIndex = 161 elseif rimPaintIndex < 161 then rimPaintIndex = 242 end
                 local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-                if vehicle ~= 0 then updatePaints(vehicle) end
+                if vehicle ~= 0 then updatePaints(vehicle, "rim") end
             end },
-            { label = "Back", submenu = "main" }
+            { label = "Back", submenu = "vehicleOptions" } -- Updated to return to Vehicle Options
         }
     }
 
-    table.insert(menu.menus.main.items, { label = "Paint Options", submenu = "paintOptions" })
+    -- Dynamically add Paint Options under Vehicle Options
+    Citizen.CreateThread(function()
+        -- Ensure Paint Options is not already in main menu
+        for i, item in ipairs(menu.menus.main.items) do
+            if item.label == "Paint Options" then
+                table.remove(menu.menus.main.items, i)
+                break
+            end
+        end
+
+        -- Add Paint Options to Vehicle Options
+        table.insert(menu.menus.vehicleOptions.items, {
+            label = "Paint Options",
+            submenu = "paintOptions"
+        })
+    end)
 end
 
 -- Update Paint Names Dynamically
